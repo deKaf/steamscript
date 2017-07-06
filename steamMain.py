@@ -1,7 +1,14 @@
-from steam import WebAPI
-import steam
-
 import os
+import imp
+
+try:
+	import steam
+	from steam import WebAPI
+except:
+	print ("Steam module not found, attempting to import")
+
+
+
 
 #### get key from file ####
 
@@ -76,7 +83,7 @@ for friend in friends:
 	friend = api.ISteamUser.GetPlayerSummaries(steamids = friendID)
 	friend = friend['response']['players'][0]
 
-	print friend['personaname']
-	
-	
+	print friend['personaname'], friend['steamid']
 
+	
+#####
