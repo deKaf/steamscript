@@ -43,12 +43,17 @@ class getSteamID():
 ############
 
 class getProfileInfo():
+	
 	"""Fetch user profile info"""
 	def __init__(self, userID):
 
 		self.userID = userID
 		self.friendIDs = []
-		self.rawData = api.ISteamUser.GetPlayerSummaries(steamids = userID)
+		self.recentlyPlayedGames = {}
+		self.ownedGames = {}
+
+		self.rawData = api.ISteamUser.GetPlayerSummaries(steamids = self.userID)
+
 
 	def rawProfile( self ):
 
@@ -64,6 +69,19 @@ class getProfileInfo():
 		
 		return friendRaw
 
+	def getOwnedGames( self ):
+
+		self.ownedGames = api.IPlayerService.GetOwnedGames(
+        	steamid=self.userID, include_appinfo=True, include_played_free_games=True, appids_filter={''})['response']['games']
+		return self.ownedGames
+
+	def getRecentlyPlayedGames( self, numGames ):
+		
+		self.recentlyPlayedGames = api.IPlayerService.GetRecentlyPlayedGames(
+	        steamid=self.userID, count=numGames)['response']['games']
+
+		return self.recentlyPlayedGames
+
 
 ##############
 
@@ -74,16 +92,25 @@ userID = getSteamID.fromName('kaf')
 
 getProfileInfo = getProfileInfo(userID)
 
-# print getProfileInfo.rawProfile()
-friends =  getProfileInfo.friends()
 
-for friend in friends:
 
-	friendID = friend['steamid']
-	friend = api.ISteamUser.GetPlayerSummaries(steamids = friendID)
-	friend = friend['response']['players'][0]
+####getting owned games list info
+# for games in getProfileInfo.getOwnedGames():
+# 	print (games['name'].encode('utf-8')), games['playtime_forever']
 
-	print friend['personaname'], friend['steamid']
+### getting recently played games
+for games in getProfileInfo.getRecentlyPlayedGames(5):
+	print (games['name'].encode('utf-8'))
+
+
+#### getting friends info
+# friends =  getProfileInfo.friends()
+# for friend in friends:
+# 	friendID = friend['steamid']
+# 	friend = api.ISteamUser.GetPlayerSummaries(steamids = friendID)
+# 	friend = friend['response']['players'][0]
+
+# 	print friend['personaname'], friend['steamid']
 
 	
 #####
