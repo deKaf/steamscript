@@ -1,5 +1,7 @@
 import os
 import imp
+import operator 
+from collections import OrderedDict
 
 try:
 	import steam
@@ -31,19 +33,22 @@ apiKey = getKey( "C:\\personal\\steam.key" )
 class getSteamID():
 	""""Class to retrieve steam64 ID via name, URL"""
 	def fromName( self, profileName ):
-		url = ('https://steamcommunity.com/id/{0}/').format(profileName)
-		return self.fromURL(url)
+		
+		profileName = api.call( 'ISteamUser.ResolveVanityURL', vanityurl = profileName )
+		return profileName['response']['steamid']
 
 	def fromURL( self, url ):
-		return steam.steamid.steam64_from_url(url)
+		
+		strippedURL = filter(None,(url).split("/"))[-1]
+		return self.fromName(strippedURL)
 
 	def fromID( self, id ):
 		return id
 
 ############
 
-class getProfileInfo():
-	
+class GetProfileInfo():
+
 	"""Fetch user profile info"""
 	def __init__(self, userID):
 
@@ -83,24 +88,31 @@ class getProfileInfo():
 		return self.recentlyPlayedGames
 
 
+
+##############
+api = WebAPI( apiKey )
 ##############
 
-api = WebAPI( apiKey )
+#### Testing ####
 
 getSteamID = getSteamID()
-userID = getSteamID.fromName('kaf')
-
-getProfileInfo = getProfileInfo(userID)
-
-
-
-####getting owned games list info
-# for games in getProfileInfo.getOwnedGames():
-# 	print (games['name'].encode('utf-8')), games['playtime_forever']
+corvoID = getSteamID.fromURL('http://steamcommunity.com/id/kohan/')
+corvoProfileInfo = GetProfileInfo(corvoID)
 
 ### getting recently played games
-for games in getProfileInfo.getRecentlyPlayedGames(5):
+print ("Corvo's most recently played games")
+for games in corvoProfileInfo.getRecentlyPlayedGames(5):
 	print (games['name'].encode('utf-8'))
+
+tempDict = corvoProfileInfo.getOwnedGames()
+newDict = {}
+for game in tempDict:
+	newDict[game['name'].encode('utf-8')] = game['playtime_forever']
+
+for k,v in sorted(newDict.items(), key=operator.itemgetter(1), reverse=True):
+	print k,v
+
+print ('Corvo owns {0} games').format (len(tempDict))
 
 
 #### getting friends info
