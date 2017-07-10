@@ -18,11 +18,10 @@ Usage Information for the Python script:
 import steam
 from steam import WebAPI
 
-api = WebAPI( apiKey )`
+api = WebAPI( apiKey )```
 [apiKey needs to be a string that points to an ASCII file with your Steam API Key]
 
-
-`
+```python
 getSteamID = getSteamID()
 profileID = getSteamID.fromURL('http://steamcommunity.com/id/kaf/')
 profileInfo = GetProfileInfo(profileID)
