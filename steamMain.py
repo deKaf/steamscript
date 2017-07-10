@@ -87,32 +87,81 @@ class GetProfileInfo():
 
 		return self.recentlyPlayedGames
 
+	def getPlayerAchievements( self , appID ):
+
+		self.achievements = api.ISteamUserStats.GetPlayerAchievements( appid = appID, steamid = self.userID)['playerstats']['achievements']
+		
+		for k in self.achievements:
+			if ['achieved'] == 0 in k: del k['achieved']
+		return self.achievements
+
+
+class GetGameInfo():
+
+	"""Fetch global game stats"""
+	def __init__( self, appID):
+		
+		self.appID = appID
+		self.numberofCurrentPlayers = ""
+
+	def getNumberofCurrentPlayers(self):
+
+		self.numberofCurrentPlayers = api.ISteamUserStats.GetNumberOfCurrentPlayers( appid = self.appID )['response']['player_count']
+		return self.numberofCurrentPlayers
+
+	def  getGlobalAchievementPercentagesForApp(self):
+
+		self.globalAchievements = api.ISteamUserStats.GetGlobalAchievementPercentagesForApp ( gameid = self.appID )['achievementpercentages']['achievements']
+		return self.globalAchievements
+
+	def getSchemaForGame(self):
+		
+		self.schemaForGame = api.ISteamUserStats.GetSchemaForGame( appid = self.appID)
+		return self.schemaForGame
+		
+
+
 
 
 ##############
 api = WebAPI( apiKey )
 ##############
 
-#### Testing ####
+### Testing GetGameInfo() ####
+
+
+getGameInfo = GetGameInfo(480490)
+print getGameInfo.getNumberofCurrentPlayers()
+# print getGameInfo.getGlobalAchievementPercentagesForApp()
+print getGameInfo.getSchemaForGame()
+
+#### Testing GetProfileInfo() ####
 
 getSteamID = getSteamID()
-corvoID = getSteamID.fromURL('http://steamcommunity.com/id/kohan/')
+corvoID = getSteamID.fromURL('http://steamcommunity.com/id/kaf/')
 corvoProfileInfo = GetProfileInfo(corvoID)
 
-### getting recently played games
-print ("Corvo's most recently played games")
-for games in corvoProfileInfo.getRecentlyPlayedGames(5):
-	print (games['name'].encode('utf-8'))
 
-tempDict = corvoProfileInfo.getOwnedGames()
-newDict = {}
-for game in tempDict:
-	newDict[game['name'].encode('utf-8')] = game['playtime_forever']
+# ### getting recently played games
+# print ("Deepcut's most recently played games")
+# tempList = []
+# for games in corvoProfileInfo.getRecentlyPlayedGames(5):
+# 	print (games['name'].encode('utf-8')), games['appid']
+# 	try:
+# 		print corvoProfileInfo.getPlayerAchievements(games['appid'])
+# 	except:
+# 		pass
 
-for k,v in sorted(newDict.items(), key=operator.itemgetter(1), reverse=True):
-	print k,v
 
-print ('Corvo owns {0} games').format (len(tempDict))
+# tempDict = corvoProfileInfo.getOwnedGames()
+# newDict = {}
+# for game in tempDict:
+# 	newDict[game['name'].encode('utf-8')] = game['playtime_forever']
+
+# for k,v in sorted(newDict.items(), key=operator.itemgetter(1), reverse=True):
+# 	print k,v
+
+# print ('Deepcut owns {0} games').format (len(tempDict))
 
 
 #### getting friends info
