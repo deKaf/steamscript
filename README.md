@@ -18,8 +18,9 @@ Usage Information for the Python script:
 import steam
 from steam import WebAPI
 
-api = WebAPI( apiKey )```
-[apiKey needs to be a string that points to an ASCII file with your Steam API Key]
+api = WebAPI( apiKey )
+```
+apiKey needs to be a string that points to an ASCII file with your Steam API Key
 
 ```python
 getSteamID = getSteamID()
