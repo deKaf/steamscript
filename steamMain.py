@@ -10,8 +10,6 @@ except:
 	print ("Steam module not found, attempting to import")
 
 
-
-
 #### get key from file ####
 
 def getKey(path):
@@ -95,6 +93,11 @@ class GetProfileInfo():
 			if ['achieved'] == 0 in k: del k['achieved']
 		return self.achievements
 
+	def getUserStatsforGame ( self , appID ):
+		self.userStatsForGame = api.ISteamUserStats.GetUserStatsForGame (appid = appID, steamid = self.userID)
+
+		return self.userStatsForGame['playerstats']['stats']
+
 
 class GetGameInfo():
 
@@ -118,7 +121,7 @@ class GetGameInfo():
 		
 		self.schemaForGame = api.ISteamUserStats.GetSchemaForGame( appid = self.appID)
 		return self.schemaForGame
-		
+
 
 
 
@@ -133,14 +136,14 @@ api = WebAPI( apiKey )
 getGameInfo = GetGameInfo(480490)
 print getGameInfo.getNumberofCurrentPlayers()
 # print getGameInfo.getGlobalAchievementPercentagesForApp()
-print getGameInfo.getSchemaForGame()
+# print getGameInfo.getSchemaForGame()
 
 #### Testing GetProfileInfo() ####
 
 getSteamID = getSteamID()
 corvoID = getSteamID.fromURL('http://steamcommunity.com/id/kaf/')
 corvoProfileInfo = GetProfileInfo(corvoID)
-
+print corvoProfileInfo.getUserStatsforGame(730)
 
 # ### getting recently played games
 # print ("Deepcut's most recently played games")
